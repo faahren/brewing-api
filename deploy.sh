@@ -1,0 +1,1 @@
+gcloud run deploy brewing-api --source=. --region=us-central1 --allow-unauthenticated

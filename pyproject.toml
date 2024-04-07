@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "brewing"
+version = "0.1.0"
+description = ""
+authors = ["Guillaume Wagner <guillaume.luc.wagner@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.8"
+Flask = "^3.0.2"
+google-cloud-firestore = "^2.16.0"
+google-cloud = "^0.34.0"
+gunicorn = "^21.2.0"
+python-dotenv = "^1.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
