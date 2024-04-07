@@ -4,6 +4,7 @@ import os
 import time
 from flask import Flask, jsonify, request
 from dotenv import load_dotenv
+import requests
 
 load_dotenv()
 
@@ -19,8 +20,20 @@ def ping():
     doc_ref = db.collection("pings").document(str(time.time()))
     doc_ref.set({"args": request.args.to_dict() , "headers": dict(request.headers), "remote_addr": request.remote_addr, "body": request.data.decode("utf-8"), "url": request.url, "method": request.method })
 
-    return jsonify({"message": "ok"})
+    forward_url = os.getenv("FORWARD_URL")
+    if (forward_url is None):
+        return jsonify({"message": "ok"})
+    
+    res = requests.request(
+        method          = request.method,
+        url             = forward_url,
+        headers         = {k:v for k,v in request.headers if k.lower() != 'host'},
+        data            = request.get_data(),
+        cookies         = request.cookies,
+        allow_redirects = False,
+    )
 
+    return jsonify({"message": "ok"})
 
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))

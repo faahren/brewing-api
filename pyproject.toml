@@ -12,6 +12,7 @@ google-cloud-firestore = "^2.16.0"
 google-cloud = "^0.34.0"
 gunicorn = "^21.2.0"
 python-dotenv = "^1.0.1"
+requests = "^2.31.0"
 
 
 [build-system]

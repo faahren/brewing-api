@@ -13,8 +13,8 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
 COPY app/* /app/
-COPY config/sa.json /app/
-COPY .env /app/
+COPY config/* /app/
+COPY config/* /app/
 
 # Project initialization:
 CMD gunicorn main:app -w 2 --threads 2 -b 0.0.0.0:${PORT}
