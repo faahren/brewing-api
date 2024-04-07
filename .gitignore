@@ -1,2 +1,3 @@
-config/*
+config/sa.json
+config/.env
 **/__pycache__/
