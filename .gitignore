@@ -1,2 +1,2 @@
-config/sa.json
-config/.env
+config/*
+**/__pycache__/
