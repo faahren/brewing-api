@@ -10,3 +10,5 @@ Steps to use it:
 * Deploy the service with `bash ./deploy.sh/`
 
 
+Github token must have:
+read:enterprise, read:org, read:user, repo
