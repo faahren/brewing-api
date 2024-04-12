@@ -209,9 +209,44 @@ resource "google_cloudbuildv2_connection" "gh_connexion" {
 
 
 
+##############################################
+#         Build image to Cloud Build         #
+##############################################
+
+resource "google_cloudbuildv2_repository" "link_to_gh_repo" {
+  project = var.project_id
+  location = var.region
+  name = "main-service"
+  parent_connection = google_cloudbuildv2_connection.gh_connexion.name
+  remote_uri = var.gh_repo_url
+}
+
+resource "google_cloudbuild_trigger" "trigger_build" {
+  project = var.project_id
+  location = var.region
+  name = "trigger-main-service"
+
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.link_to_gh_repo.id
+    push {
+      branch = "main.*"
+    }
+  }
+
+
+  substitutions = {
+    "_REGION"    = "${var.region}"
+    "_PROJECT"   = "${var.project_id}"
+    "_REPO"      = "${var.repository}"
+    "_IMAGE"     = "${var.docker_image}"
+  }
+
+  filename = "cloudbuild.yaml"
+}
+
 data "docker_registry_image" "container_image" {
   name = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}"
-  depends_on = [google_artifact_registry_repository.my_docker_repo, google_cloudbuildv2_connection.gh_connexion]
+  depends_on = [google_artifact_registry_repository.my_docker_repo, google_cloudbuildv2_connection.gh_connexion, google_cloudbuild_trigger.trigger_build]
 }
 
 output digest {
