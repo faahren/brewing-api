@@ -13,7 +13,7 @@ variable "region" {
   type        = string
 }
 
-variable "region" {
+variable "region_image" {
   description = "The default compute region"
   type        = string
   default = "us-central1"

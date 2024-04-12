@@ -129,7 +129,7 @@ resource "time_sleep" "wait_30_seconds" {
 resource "google_artifact_registry_repository" "my_docker_repo" {
   provider = google
 
-  location = var.region
+  location = var.region_image
   repository_id = var.repository
   description = "My docker repository"
   format = "DOCKER"
