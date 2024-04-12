@@ -17,6 +17,17 @@ provider "google" {
   zone    = var.zone
 }
 
+data "google_client_config" "default" {
+}
+
+provider "docker" {
+  registry_auth {
+    address  = "${var.region_image}-docker.pkg.dev"
+    username = "oauth2accesstoken"
+    password = data.google_client_config.default.access_token
+  }
+}
+
 #############################################
 #               Enable API's                #
 #############################################
@@ -244,11 +255,90 @@ resource "google_cloudbuild_trigger" "trigger_build" {
   filename = "cloudbuild.yaml"
 }
 
+
 data "docker_registry_image" "container_image" {
   name = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}"
-  depends_on = [google_artifact_registry_repository.my_docker_repo, google_cloudbuildv2_connection.gh_connexion, google_cloudbuild_trigger.trigger_build]
+  depends_on = [google_cloudbuild_trigger.trigger_build, google_artifact_registry_repository.my_docker_repo]
 }
 
 output digest {
   value = data.docker_registry_image.container_image.sha256_digest
+}
+
+##############################################
+#       Deploy API to Google Cloud Run       #
+##############################################
+
+# Deploy image to Cloud Run
+resource "google_cloud_run_service" "main_service" {
+  provider = google
+  name     = "brewing-api"
+  location = var.region
+  template {
+    spec {
+        containers {
+            image = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}@${data.docker_registry_image.container_image.sha256_digest}"
+            resources {
+                limits = {
+                "memory" = "1G"
+                "cpu" = "1"
+                }
+            }
+            env {
+                name = "project_id"
+                value = var.project_id
+            }
+            env {
+                name = "database_id"
+                value = var.database_id
+            }
+            env {
+                name = "forward_url"
+                value = var.forward_url
+            }
+            env {
+                name = "dataset_id"
+                value = var.dataset_id
+            }
+      }
+    }
+    
+    metadata {
+        annotations = {
+            "autoscaling.knative.dev/minScale" = "0"
+            "autoscaling.knative.dev/maxScale" = "1"
+        }
+    }
+  }
+  traffic {
+    percent = 100
+    latest_revision = true
+  }
+}
+
+resource "google_cloud_run_service_iam_binding" "default" {
+  location = google_cloud_run_service.main_service.location
+  service  = google_cloud_run_service.main_service.name
+  role     = "roles/run.invoker"
+  members = [
+    "allUsers"
+  ]
+}
+
+output "cloud_run_instance_url" {
+  value = google_cloud_run_service.main_service.status.0.url
+}
+
+resource "google_cloud_run_domain_mapping" "default" {
+  location = var.region_image
+  name     =  var.service_custom_url
+
+  metadata {
+    namespace = var.project_id
+  }
+
+  spec {
+    route_name = google_cloud_run_service.main_service.name
+    
+  }
 }

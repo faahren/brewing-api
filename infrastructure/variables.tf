@@ -48,3 +48,16 @@ variable "docker_image" {
     type = string
     default = "brewing-api"
 }
+
+variable "database_id" {
+    type = string
+}
+variable "forward_url" {
+    type = string
+}
+variable "dataset_id" {
+    type = string
+}
+variable "service_custom_url" {
+    type = string
+}
