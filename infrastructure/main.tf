@@ -195,7 +195,7 @@ resource "google_secret_manager_secret_iam_policy" "policy" {
 // Create the GitHub connection
 resource "google_cloudbuildv2_connection" "gh_connexion" {
     project = var.project_id
-    location = var.region
+    location = var.region_image
     name = "gh_connexion"
 
     github_config {
@@ -215,7 +215,7 @@ resource "google_cloudbuildv2_connection" "gh_connexion" {
 
 resource "google_cloudbuildv2_repository" "link_to_gh_repo" {
   project = var.project_id
-  location = var.region
+  location = var.region_image
   name = "main-service"
   parent_connection = google_cloudbuildv2_connection.gh_connexion.name
   remote_uri = var.gh_repo_url
@@ -223,7 +223,7 @@ resource "google_cloudbuildv2_repository" "link_to_gh_repo" {
 
 resource "google_cloudbuild_trigger" "trigger_build" {
   project = var.project_id
-  location = var.region
+  location = var.region_image
   name = "trigger-main-service"
 
   repository_event_config {
@@ -235,7 +235,7 @@ resource "google_cloudbuild_trigger" "trigger_build" {
 
 
   substitutions = {
-    "_REGION"    = "${var.region}"
+    "_REGION"    = "${var.region_image}"
     "_PROJECT"   = "${var.project_id}"
     "_REPO"      = "${var.repository}"
     "_IMAGE"     = "${var.docker_image}"
@@ -245,7 +245,7 @@ resource "google_cloudbuild_trigger" "trigger_build" {
 }
 
 data "docker_registry_image" "container_image" {
-  name = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}"
+  name = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}"
   depends_on = [google_artifact_registry_repository.my_docker_repo, google_cloudbuildv2_connection.gh_connexion, google_cloudbuild_trigger.trigger_build]
 }
 

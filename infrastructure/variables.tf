@@ -13,6 +13,12 @@ variable "region" {
   type        = string
 }
 
+variable "region" {
+  description = "The default compute region"
+  type        = string
+  default = "us-central1"
+}
+
 variable "zone" {
   description = "The default compute zone"
   type        = string
