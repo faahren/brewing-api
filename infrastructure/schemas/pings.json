@@ -1,0 +1,62 @@
+[
+    {
+        "name": "datetime",
+        "mode": "NULLABLE",
+        "type": "DATETIME"
+    },
+    {
+        "name": "device_name",
+        "mode": "NULLABLE",
+        "type": "STRING"
+    },
+    {
+        "name": "device_id",
+        "mode": "NULLABLE",
+        "type": "STRING"
+    },
+    {
+        "name": "device_token",
+        "mode": "NULLABLE",
+        "type": "STRING"
+    },
+    {
+        "name": "device_type",
+        "mode": "NULLABLE",
+        "type": "STRING"
+    },
+    {
+        "name": "angle",
+        "mode": "NULLABLE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "temperature",
+        "mode": "NULLABLE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "temp_units",
+        "mode": "NULLABLE",
+        "type": "STRING"
+    },
+    {
+        "name": "battery",
+        "mode": "NULLABLE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "gravity",
+        "mode": "NULLABLE",
+        "type": "FLOAT"
+    },
+    {
+        "name": "interval",
+        "mode": "NULLABLE",
+        "type": "INTEGER"
+    },
+    {
+        "name": "RSSI",
+        "mode": "NULLABLE",
+        "type": "INTEGER"
+    }
+]

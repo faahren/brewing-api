@@ -3,11 +3,6 @@ variable "project_id" {
   type        = string
 }
 
-variable "project_number" {
-  description = "The number of the project"
-  type        = string
-}
-
 variable "region" {
   description = "The default compute region"
   type        = string

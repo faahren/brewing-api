@@ -19,6 +19,7 @@ provider "google" {
 
 data "google_client_config" "default" {
 }
+data "google_project" "project" {}
 
 provider "docker" {
   registry_auth {
@@ -183,18 +184,22 @@ resource "google_secret_manager_secret" "gh_token_secret" {
     replication {
         auto {}
     }
+    depends_on = [time_sleep.wait_30_seconds]
 }
 
 resource "google_secret_manager_secret_version" "gh_token_secret_version" {
     secret = google_secret_manager_secret.gh_token_secret.id
     secret_data = var.gh_token
+    
+    depends_on = [time_sleep.wait_30_seconds]
 }
 
 data "google_iam_policy" "serviceagent_secretAccessor" {
     binding {
         role = "roles/secretmanager.secretAccessor"
-        members = ["serviceAccount:service-${var.project_number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
+        members = ["serviceAccount:service-${data.google_project.project.number}@gcp-sa-cloudbuild.iam.gserviceaccount.com"]
     }
+
 }
 
 resource "google_secret_manager_secret_iam_policy" "policy" {
@@ -329,16 +334,26 @@ output "cloud_run_instance_url" {
   value = google_cloud_run_service.main_service.status.0.url
 }
 
-resource "google_cloud_run_domain_mapping" "default" {
-  location = var.region_image
-  name     =  var.service_custom_url
+##############################################
+#             Deploy BQ Dataset              #
+##############################################
 
-  metadata {
-    namespace = var.project_id
+resource "google_bigquery_dataset" "brewing_dataset" {
+  dataset_id                  = var.dataset_id
+  friendly_name               = "Brewing Hits"
+  description                 = "Dataset for all brewing hits"
+  location                    = var.region
+}
+
+resource "google_bigquery_table" "brewing_dataset" {
+  dataset_id = google_bigquery_dataset.brewing_dataset.dataset_id
+  table_id   = "pings"
+  require_partition_filter = false
+
+  labels = {
+    env = "default"
   }
 
-  spec {
-    route_name = google_cloud_run_service.main_service.name
-    
-  }
+  schema = file("${path.module}/schemas/pings.json")
+
 }
