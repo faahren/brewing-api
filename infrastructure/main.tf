@@ -257,7 +257,7 @@ resource "google_cloudbuild_trigger" "trigger_build" {
     "_IMAGE"     = "${var.docker_image}"
   }
 
-  filename = "cloudbuild.yaml"
+  filename = "build/prod/cloudbuild.yaml"
 }
 
 

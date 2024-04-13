@@ -1,0 +1,1 @@
+docker-compose -f infrastructure/build/local/docker-compose.yml up --build

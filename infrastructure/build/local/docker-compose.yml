@@ -1,0 +1,12 @@
+version: '3'
+services:
+  web:
+    build:
+        dockerfile: infrastructure/build/local/Dockerfile.dev
+        context: ./../../../
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./../../../app:/app
+      - ./../../../config/sa.json:/app/sa.json
+      - ./../../../config/.env:/app/.env
