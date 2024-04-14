@@ -8,5 +8,5 @@ services:
       - "5000:5000"
     volumes:
       - ./../../../app:/app
-      - ./../../../config/sa.json:/app/sa.json
       - ./../../../config/.env:/app/.env
+      - ~/.config/gcloud/application_default_credentials.json:/tmp/keys/ADC.json:ro

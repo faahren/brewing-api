@@ -15,9 +15,10 @@ app = Flask(__name__)
 def ping():
     ping = PingFactory().create_ping(request.json)
 
-    fs_service = FirestoreService()
-    fs_service.insert("pings", {"args": request.args.to_dict() , "headers": dict(request.headers), "remote_addr": request.remote_addr, "body": ping.toJSON(), "url": request.url, "method": request.method })
-    
+
+    bq_service = BigqueryService()
+    bq_service.insert("pings", ping)
+
     ForwardService().forward(request)
 
     return jsonify({"message": "ok"})

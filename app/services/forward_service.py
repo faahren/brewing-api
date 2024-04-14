@@ -18,3 +18,5 @@ class ForwardService():
             cookies         = request.cookies,
             allow_redirects = False,
         )
+        print(res.text)
+        

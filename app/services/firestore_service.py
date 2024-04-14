@@ -6,7 +6,7 @@ from google.oauth2 import service_account
 class FirestoreService():
     def __init__(self):
         credentials = service_account.Credentials.from_service_account_file(
-            'sa.json', scopes=["https://www.googleapis.com/auth/cloud-platform"],
+            '/tmp/keys/ADC.json', scopes=["https://www.googleapis.com/auth/cloud-platform"],
         )
         self.db = firestore.Client(project=os.getenv("PROJECT_ID"), credentials=credentials, database=os.getenv("DATABASE_ID"))
     
