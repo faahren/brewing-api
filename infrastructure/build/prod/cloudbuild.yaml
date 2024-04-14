@@ -1,6 +1,6 @@
 steps:
   - name: 'gcr.io/cloud-builders/docker'
-    dir: './../../../'
+    dir: '.'
     args: [ 'build', '.', '-t', '${_REGION}-docker.pkg.dev/${_PROJECT}/${_REPO}/${_IMAGE}', '-f', 'infrastructure/build/prod/Dockerfile' ]
     id: 'build-image-api'
 images:
