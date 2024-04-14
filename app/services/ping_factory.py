@@ -1,4 +1,5 @@
 from models.ping import Ping
+import datetime
 
 class PingFactory():
 
@@ -6,6 +7,7 @@ class PingFactory():
         #Add all sanity checks
         data = json_body
         ping = Ping()
+        ping.datetime = datetime.datetime.now()
         ping.device_name = data["name"]
         ping.device_id = data["ID"]
         ping.device_token = data["token"]
