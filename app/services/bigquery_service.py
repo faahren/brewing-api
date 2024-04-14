@@ -4,8 +4,8 @@ from google.oauth2 import service_account
 
 class BigqueryService():
     def __init__(self):
-        self.client = bigquery.Client(project=os.getenv('PROJECT_ID'))
-        self.dataset_id = os.getenv('DATASET_ID')
+        self.client = bigquery.Client(project=os.getenv('project_id'))
+        self.dataset_id = os.getenv('dataset_id')
     
     def insert(self, table_id, data):
         

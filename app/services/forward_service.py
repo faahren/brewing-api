@@ -3,7 +3,7 @@ import requests
 
 class ForwardService():
     def __init__(self):
-        self.forward_url = os.getenv("FORWARD_URL")
+        self.forward_url = os.getenv("forward_url")
 
     def forward(self, request):
         if (self is None):
@@ -19,4 +19,3 @@ class ForwardService():
             allow_redirects = False,
         )
         print(res.text)
-        
