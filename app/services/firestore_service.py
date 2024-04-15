@@ -8,7 +8,7 @@ class FirestoreService():
         credentials = service_account.Credentials.from_service_account_file(
             '/tmp/keys/ADC.json', scopes=["https://www.googleapis.com/auth/cloud-platform"],
         )
-        self.db = firestore.Client(project=os.getenv("PROJECT_ID"), credentials=credentials, database=os.getenv("DATABASE_ID"))
+        self.db = firestore.Client(project=os.getenv("project_id"), credentials=credentials, database=os.getenv("database_id"))
     
     def insert(self, collection, data):
         doc_ref = self.db.collection(collection).document(str(time.time()))

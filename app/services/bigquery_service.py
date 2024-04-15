@@ -17,3 +17,7 @@ class BigqueryService():
             return True
         else:
             return False
+        
+    def get_query_results(self, query):
+        rows = self.client.query(query).result()
+        return rows
