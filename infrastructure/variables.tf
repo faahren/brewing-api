@@ -44,6 +44,10 @@ variable "docker_image" {
     default = "brewing-api"
 }
 
+variable "docker_image_viz" {
+    type = string
+    default = "brewing-viz"
+}
 variable "database_id" {
     type = string
 }

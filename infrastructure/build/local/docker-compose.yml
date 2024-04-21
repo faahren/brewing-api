@@ -10,3 +10,13 @@ services:
       - ./../../../app:/app
       - ./../../../config/.env:/app/.env
       - ~/.config/gcloud/application_default_credentials.json:/tmp/keys/ADC.json:ro
+  viz:
+    build:
+        dockerfile: infrastructure/build/local/Dockerfile-viz.dev
+        context: ./../../../
+    ports:
+      - "8050:8050"
+    volumes:
+      - ./../../../app:/app
+      - ./../../../config/.env:/app/.env
+      - ~/.config/gcloud/application_default_credentials.json:/tmp/keys/ADC.json:ro

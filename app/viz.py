@@ -12,14 +12,10 @@ from models.ping_repository import PingRepository
 import os
 from dotenv import load_dotenv
 
-pt = 'config/.env'
-load_dotenv(pt)
-
-assets_path = os.getcwd() + "/app/viz/assets"
-print(assets_path)
-
+load_dotenv()
+assets_path = os.getcwd() + "/viz/assets"
 app = Dash(assets_folder=assets_path)
-
+server = app.server
 colors = {
     'background': '#161a1d',
     'text': '#ffffff'
@@ -87,4 +83,4 @@ def display_time_series(data, x, y):
     return fig
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8050)))

@@ -224,11 +224,6 @@ resource "google_cloudbuildv2_connection" "gh_connexion" {
 }
 
 
-
-##############################################
-#         Build image to Cloud Build         #
-##############################################
-
 resource "google_cloudbuildv2_repository" "link_to_gh_repo" {
   project = var.project_id
   location = var.region_image
@@ -236,6 +231,10 @@ resource "google_cloudbuildv2_repository" "link_to_gh_repo" {
   parent_connection = google_cloudbuildv2_connection.gh_connexion.name
   remote_uri = var.gh_repo_url
 }
+
+##############################################
+#       Build API image to Cloud Build       #
+##############################################
 
 resource "google_cloudbuild_trigger" "trigger_build" {
   project = var.project_id
@@ -283,6 +282,94 @@ resource "google_cloud_run_service" "main_service" {
     spec {
         containers {
             image = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image}@${data.docker_registry_image.container_image.sha256_digest}"
+            resources {
+                limits = {
+                "memory" = "1G"
+                "cpu" = "1"
+                }
+            }
+            env {
+                name = "project_id"
+                value = var.project_id
+            }
+            env {
+                name = "database_id"
+                value = var.database_id
+            }
+            env {
+                name = "forward_url"
+                value = var.forward_url
+            }
+            env {
+                name = "dataset_id"
+                value = var.dataset_id
+            }
+      }
+    }
+    
+    metadata {
+        annotations = {
+            "autoscaling.knative.dev/minScale" = "0"
+            "autoscaling.knative.dev/maxScale" = "1"
+        }
+    }
+  }
+  traffic {
+    percent = 100
+    latest_revision = true
+  }
+}
+
+##############################################
+#       Build VIZ image to Cloud Build       #
+##############################################
+
+resource "google_cloudbuild_trigger" "trigger_build_viz" {
+  project = var.project_id
+  location = var.region_image
+  name = "trigger-viz-service"
+
+  repository_event_config {
+    repository = google_cloudbuildv2_repository.link_to_gh_repo.id
+    push {
+      branch = "main.*"
+    }
+  }
+
+
+  substitutions = {
+    "_REGION"    = "${var.region_image}"
+    "_PROJECT"   = "${var.project_id}"
+    "_REPO"      = "${var.repository}"
+    "_IMAGE"     = "${var.docker_image_viz}"
+  }
+
+  filename = "infrastructure/build/prod/cloudbuild-viz.yaml"
+}
+
+
+data "docker_registry_image" "container_image_viz" {
+  name = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image_viz}"
+  depends_on = [google_cloudbuild_trigger.trigger_build_viz, google_artifact_registry_repository.my_docker_repo]
+}
+
+output digest_viz {
+  value = data.docker_registry_image.container_image_viz.sha256_digest
+}
+
+##############################################
+#       Deploy VIZ to Google Cloud Run       #
+##############################################
+
+# Deploy image to Cloud Run
+resource "google_cloud_run_service" "viz_service" {
+  provider = google
+  name     = "brewing-viz"
+  location = var.region
+  template {
+    spec {
+        containers {
+            image = "${var.region_image}-docker.pkg.dev/${var.project_id}/${var.repository}/${var.docker_image_viz}@${data.docker_registry_image.container_image_viz.sha256_digest}"
             resources {
                 limits = {
                 "memory" = "1G"
