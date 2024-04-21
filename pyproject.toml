@@ -6,7 +6,7 @@ authors = ["Guillaume Wagner <guillaume.luc.wagner@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 Flask = "^3.0.2"
 google-cloud-firestore = "^2.16.0"
 google-cloud = "^0.34.0"
@@ -14,6 +14,8 @@ gunicorn = "^21.2.0"
 python-dotenv = "^1.0.1"
 requests = "^2.31.0"
 google-cloud-bigquery = "^3.20.1"
+dash = "^2.16.1"
+pandas = "^2.2.2"
 
 
 [build-system]

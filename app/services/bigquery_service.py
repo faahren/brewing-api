@@ -1,6 +1,5 @@
 import os
 from google.cloud import bigquery
-from google.oauth2 import service_account
 
 class BigqueryService():
     def __init__(self):

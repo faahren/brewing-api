@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400..700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=PT+Sans:ital,wght@0,400;0,700;1,400;1,700&family=Pixelify+Sans:wght@400..700&display=swap');
+
+body {
+    font-family: "PT Sans", sans-serif;
+    padding:30px
+}
+h1, h2, h3, h4, h5, h6 {
+    font-family: "Pixelify Sans", sans-serif;
+    color: hotpink
+}
+
+h1 {
+    font-size: 60px;
+}
+
+html {
+    background-color: black;
+    font-family: "PT Sans", sans-serif;
+}
+
+p {
+    background-color: #161a1d;
+    color: white;
+}
