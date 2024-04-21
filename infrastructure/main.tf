@@ -407,7 +407,14 @@ resource "google_cloud_run_service" "viz_service" {
     latest_revision = true
   }
 }
-
+resource "google_cloud_run_service_iam_binding" "default_viz" {
+  location = google_cloud_run_service.viz_service.location
+  service  = google_cloud_run_service.viz_service.name
+  role     = "roles/run.invoker"
+  members = [
+    "allUsers"
+  ]
+}
 resource "google_cloud_run_service_iam_binding" "default" {
   location = google_cloud_run_service.main_service.location
   service  = google_cloud_run_service.main_service.name
