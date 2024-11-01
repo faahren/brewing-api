@@ -60,3 +60,6 @@ variable "dataset_id" {
 variable "service_custom_url" {
     type = string
 }
+variable "firestore_database_id" {
+    type = string
+}

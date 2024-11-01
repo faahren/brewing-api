@@ -2,11 +2,11 @@ terraform {
   required_providers {
     google = {
       source = "hashicorp/google"
-      version = "5.24.0"
+      version = "6.9.0"
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+      version = "~> 3.0.2"
     }
   }
 }
@@ -450,4 +450,38 @@ resource "google_bigquery_table" "brewing_dataset" {
 
   schema = file("${path.module}/schemas/pings.json")
 
+}
+
+
+##############################################
+#             Deploy Firestore              #
+##############################################
+
+resource "google_firestore_database" "default_database" {
+  project     = var.project_id
+  name        = "(default)"
+  location_id = var.region
+  type        = "FIRESTORE_NATIVE"
+}
+
+resource "google_firestore_index" "brewings_index" {
+  project     = var.project_id
+  database    = google_firestore_database.default_database.name
+  collection =  var.firestore_database_id
+  fields {
+    field_path = "device_id"
+    order = "ASCENDING"
+  }
+  fields {
+    field_path = "date_end"
+    order = "ASCENDING"
+  }
+  fields {
+    field_path = "date_start"
+    order = "ASCENDING"
+  }
+  fields {
+    field_path = "__name__"
+    order = "ASCENDING"
+  }
 }

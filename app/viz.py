@@ -9,7 +9,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 
 from models.ping_repository import PingRepository
-
+from models.brewings_repository import BrewingsRepository
 import os
 from dotenv import load_dotenv
 
@@ -22,20 +22,17 @@ colors = {
     'text': '#ffffff'
 }
 
-ping_repository = PingRepository()
+def get_brewings():
+    brewings = BrewingsRepository().get_all_brewings()
+    # Order by date_start ASC
+    brewings.sort(key=lambda x: x['date_start'])
 
-pings = ping_repository.get_metrics_history()
-pings_df = pd.DataFrame(pings)
+    return brewings
 
-increments = ping_repository.get_metrics_increments()
-increments_df = pd.DataFrame(increments)
-
-
-def get_devices():
-    devices = pings_df['device_id'].unique()
-    return devices
-
-print(get_devices())
+def get_options():
+    brewings = get_brewings()
+    return [{"label": f"{brewing['name']} - Starting {brewing['date_start']}", "value": brewing["brewing_id"]} for brewing in brewings]
+brewings = get_brewings()
 
 app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding': '20px'}, children=[
     html.H1(
@@ -46,11 +43,11 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
             'background': colors['background']
         }
     ),
-    html.P("Select Device:"),
+    html.P("Select Brewing:"),
     dcc.Dropdown(
         id="ticker",
-        options=get_devices(),
-        value=get_devices()[0],
+        options=get_options(),
+        value=brewings[0]['brewing_id'],
         clearable=False,
     ),
     dcc.Graph(id="main-line-chart"),
@@ -74,29 +71,34 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
     dcc.Graph(id="increments-bar-chart"),
 ])
 
+
+
 @app.callback(
     Output("main-line-chart", "figure"), 
-    Input("ticker", "value"))
-def display_main_line(ticker):
-    filtered = pings_df[pings_df['device_id'] == ticker]
-    return display_time_series(filtered, 'date_formatted', ["gravity", "alcool"])
-
-@app.callback(
     Output("gravity-line-chart", "figure"), 
-    Input("ticker", "value"))
-def display_main_line(ticker):
-    filtered = pings_df[pings_df['device_id'] == ticker]
-    return display_time_series(filtered, 'date_formatted', ["gravity"])
-
-@app.callback(
     Output("increments-bar-chart", "figure"), 
     Input("ticker", "value"))
-def display_increments(ticker):
-    filtered = increments_df[increments_df['device_id'] == ticker]
-    return display_bar_chart(filtered, 'date', ["alcool_increment", "density_increment"])
+def update_charts(ticker):
+
+    brewing = next((item for item in brewings if item["brewing_id"] == ticker), None)
+    if brewing is None:
+        return None, None, None
+
+    ping_repository = PingRepository()
+    pings = ping_repository.get_metrics_history(date_start=brewing['date_start'], date_end=brewing['date_end'])
+    pings_df = pd.DataFrame(pings) 
+
+    increments = ping_repository.get_metrics_increments(date_start=brewing['date_start'], date_end=brewing['date_end'])
+    increments_df = pd.DataFrame(increments)
+
+
+    return display_time_series(pings_df, 'date_formatted', ["gravity", "alcool"]), display_time_series(pings_df, 'date_formatted', ["gravity"]), display_bar_chart(increments_df, 'date', ["alcool_increment", "density_increment"])
+
 
 def display_bar_chart(data, x, y):
     fig = go.Figure()
+    if len(data) == 0:
+        return fig
     # fig = make_subplots(specs=[[{"secondary_y": True}]])
     fig.add_trace(go.Bar(
         x=data[x],
@@ -134,6 +136,9 @@ def display_bar_chart(data, x, y):
 
 
 def display_time_series(data, x, y):
+    if len(data) == 0:
+        data = pd.DataFrame(columns=[x, *y])
+
     fig = px.line(data, x=x, y=y, markers=True)
     fig.update_layout(
         plot_bgcolor=colors['background'],
