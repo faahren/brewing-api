@@ -297,10 +297,6 @@ resource "google_cloud_run_service" "main_service" {
                 value = var.database_id
             }
             env {
-                name = "forward_url"
-                value = var.forward_url
-            }
-            env {
                 name = "dataset_id"
                 value = var.dataset_id
             }
@@ -383,10 +379,6 @@ resource "google_cloud_run_service" "viz_service" {
             env {
                 name = "database_id"
                 value = var.database_id
-            }
-            env {
-                name = "forward_url"
-                value = var.forward_url
             }
             env {
                 name = "dataset_id"

@@ -13,6 +13,7 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml /app/
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi --no-root
 ENV GOOGLE_APPLICATION_CREDENTIALS=/tmp/keys/ADC.json
+ENV PYTHONUNBUFFERED=1
 
 # Project initialization:
 CMD gunicorn viz:server -w 2 --threads 2 -b 0.0.0.0:${PORT} --reload

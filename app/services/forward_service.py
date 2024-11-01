@@ -1,21 +1,23 @@
-import os
 import requests
+import os
 
-class ForwardService():
-    def __init__(self):
-        self.forward_url = os.getenv("forward_url")
+class ForwardService:
+    def forward(self, request, forward_url):
 
-    def forward(self, request):
-        if (self is None):
+        try:
+            # Copier les headers de la requête originale
+            headers = {key: value for (key, value) in request.headers if key != 'Host'}
+            
+            # Faire suivre la requête avec la même méthode et le même body
+            response = requests.request(
+                method=request.method,
+                url=forward_url,
+                headers=headers,
+                json=request.get_json(silent=True)
+            )
+            
+            return response.status_code
+            
+        except requests.exceptions.RequestException as e:
+            print(f"Error forwarding request: {str(e)}")
             return None
-        
-    
-        res = requests.request(
-            method          = request.method,
-            url             = self.forward_url,
-            headers         = {k:v for k,v in request.headers if k.lower() != 'host'},
-            data            = request.get_data(),
-            cookies         = request.cookies,
-            allow_redirects = False,
-        )
-        print(res.text)

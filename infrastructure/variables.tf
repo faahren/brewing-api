@@ -51,9 +51,6 @@ variable "docker_image_viz" {
 variable "database_id" {
     type = string
 }
-variable "forward_url" {
-    type = string
-}
 variable "dataset_id" {
     type = string
 }

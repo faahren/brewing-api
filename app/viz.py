@@ -9,7 +9,7 @@ import pandas as pd
 from plotly.subplots import make_subplots
 
 from models.ping_repository import PingRepository
-from models.brewings_repository import BrewingsRepository
+from models.brewing_repository import BrewingRepository
 import os
 from dotenv import load_dotenv
 
@@ -23,7 +23,7 @@ colors = {
 }
 
 def get_brewings():
-    brewings = BrewingsRepository().get_all_brewings()
+    brewings = BrewingRepository().get_all_brewings()
     # Order by date_start ASC
     brewings.sort(key=lambda x: x['date_start'])
 
@@ -79,7 +79,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
     Output("increments-bar-chart", "figure"), 
     Input("ticker", "value"))
 def update_charts(ticker):
-
+    print(f"ticker: {ticker}")
     brewing = next((item for item in brewings if item["brewing_id"] == ticker), None)
     if brewing is None:
         return None, None, None

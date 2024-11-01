@@ -12,3 +12,6 @@ class FireRepository():
     
     def get_all_results(self):
         return self.db.get_all_results(self.collection)
+    
+    def get_one_by(self, field, value):
+        return self.db.get_one_by(self.collection, field, value)

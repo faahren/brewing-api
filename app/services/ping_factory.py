@@ -19,4 +19,4 @@ class PingFactory():
         ping.gravity = data["gravity"]
         ping.interval = data["interval"]
         ping.RSSI = data["RSSI"]
-        return ping
+        return ping#

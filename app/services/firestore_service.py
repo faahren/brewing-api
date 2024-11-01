@@ -24,3 +24,9 @@ class FirestoreService():
     
     def get_all_results(self, collection):
         return self.get_list_as_dict(self.db.collection(collection).stream())
+    
+    def get_one_by(self, collection, field, value):
+        results = self.db.collection(collection).where(field, "==", value).stream()
+        print(results)
+        for result in results:
+            return result.to_dict()

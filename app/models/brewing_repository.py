@@ -1,7 +1,7 @@
 from models.firerepository import FireRepository
 from datetime import datetime
 
-class BrewingsRepository(FireRepository):
+class BrewingRepository(FireRepository):
     def __init__(self):
         super().__init__("brewings")
     
