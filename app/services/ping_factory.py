@@ -9,7 +9,7 @@ class PingFactory():
         ping = Ping()
         ping.datetime = datetime.datetime.now()
         ping.device_name = data["name"]
-        ping.device_id = data["ID"]
+        ping.device_id = str(data["ID"]) if isinstance(data["ID"], int) else data["ID"]
         ping.device_token = data["token"]
         ping.device_type = "ispindel"
         ping.angle = data["angle"]
