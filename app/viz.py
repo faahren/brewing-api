@@ -24,11 +24,14 @@ colors = {
 }
 
 def get_brewings():
-    brewings = BrewingRepository().get_all_brewings()
-    # Order by date_start ASC
-    brewings.sort(key=lambda x: x['date_start'], reverse=True)
-
-    return brewings
+    try:
+        brewings = BrewingRepository().get_all_brewings()
+        # Order by date_start ASC
+        brewings.sort(key=lambda x: x['date_start'], reverse=True)
+        return brewings
+    except Exception as e:
+        print("There was an error with the get_brewings method")
+        return []
 
 def get_options():
     # Sort by brewing_id desc
@@ -36,15 +39,6 @@ def get_options():
 brewings = get_brewings()
 
 app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding': '20px'}, children=[
-    html.H1(
-        children='iSpindel Dashboard',
-        style={
-            'textAlign': 'center',
-            'color': colors['text'],
-            'background': colors['background']
-        }
-    ),
-    html.P("Select Brewing:"),
     dcc.Dropdown(
         id="ticker",
         options=get_options(),
@@ -68,7 +62,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
     ]),
     dcc.Graph(id="main-line-chart"),
     html.H2(
-        children='Daily increment of density and alcohol content',
+        children='Hourly increment of density and alcohol content',
         style={
             'textAlign': 'center',
             'color': colors['text'],
@@ -131,7 +125,7 @@ def update_charts(ticker, n_intervals):
         ]
 
     return display_time_series(pings_df, 'date_formatted', ["gravity", "alcool"]), \
-           display_bar_chart(increments_df, 'date', ["alcool_increment", "density_increment"]), \
+           display_bar_chart(increments_df, 'datetime_plus', ["alcool_increment", "density_increment"]), \
            current_metrics
 
 
@@ -147,13 +141,13 @@ def display_bar_chart(data, x, y):
         marker_color='indianred',
         yaxis="y"
     ))    
-    fig.add_trace(go.Scatter(
-        x=data[x],
-        y=data[y[1]],
-        name=y[1],
-        marker_color='blue',
-        yaxis="y2"
-    ))
+    # fig.add_trace(go.Scatter(
+    #     x=data[x],
+    #     y=data[y[1]],
+    #     name=y[1],
+    #     marker_color='blue',
+    #     yaxis="y2"
+    # ))
 
     fig.update_layout(
         plot_bgcolor=colors['background'],
@@ -161,6 +155,7 @@ def display_bar_chart(data, x, y):
         font_color=colors['text'],
         margin=dict(l=0, r=0, t=10, b=0)
         )
+    
     fig.update_layout(
         legend=dict(
             orientation="h",

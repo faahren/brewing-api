@@ -3,8 +3,11 @@ from google.cloud import bigquery
 
 class BigqueryService():
     def __init__(self):
-        self.client = bigquery.Client(project=os.getenv('project_id'))
-        self.dataset_id = os.getenv('dataset_id')
+        try:
+            self.client = bigquery.Client(project=os.getenv('project_id'))
+            self.dataset_id = os.getenv('dataset_id')
+        except Exception as e:
+            print("There was an error with the BigqueryService")
     
     def insert(self, table_id, data):
         
@@ -18,5 +21,9 @@ class BigqueryService():
             return False
         
     def get_query_results(self, query):
-        rows = self.client.query(query).result()
-        return rows
+        try:
+            rows = self.client.query(query).result()
+            return rows
+        except Exception as e:
+            print("There was an error with the query", e)
+            return None
