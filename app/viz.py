@@ -62,7 +62,7 @@ app.layout = html.Div(style={'backgroundColor': colors['background'], 'padding':
     ]),
     dcc.Graph(id="main-line-chart"),
     html.H2(
-        children='Hourly increment of density and alcohol content',
+        children='Hourly increment of alcohol',
         style={
             'textAlign': 'center',
             'color': colors['text'],
